@@ -20,5 +20,10 @@ module.exports = {
             isDeleted: false,
             username: username
         })
+    }, GetAnUserById: async function (id) {
+        return await userModel.findOne({
+            isDeleted: false,
+            _id: id
+        })
     }
 }

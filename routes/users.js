@@ -3,9 +3,9 @@ var router = express.Router();
 let { validatedResult, CreateAnUserValidator, ModifyAnUserValidator } = require('../utils/validator')
 let userModel = require("../schemas/users");
 let userController = require('../controllers/users')
+let { CheckLogin } = require('../utils/authHandler')
 
-
-router.get("/", async function (req, res, next) {
+router.get("/", CheckLogin, async function (req, res, next) {
   let users = await userModel
     .find({ isDeleted: false })
   res.send(users);

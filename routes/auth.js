@@ -1,8 +1,9 @@
 let express = require('express');
 let router = express.Router()
 let userController = require('../controllers/users')
-let bcrypt = require('bcrypt')
-
+let bcrypt = require('bcrypt');
+const { CheckLogin } = require('../utils/authHandler');
+let jwt = require('jsonwebtoken')
 router.post('/register', async function (req, res, next) {
     try {
         let { username, password, email } = req.body;
@@ -16,6 +17,7 @@ router.post('/register', async function (req, res, next) {
         })
     }
 })
+
 router.post('/login', async function (req, res, next) {
     try {
         let { username, password } = req.body;
@@ -35,9 +37,13 @@ router.post('/login', async function (req, res, next) {
         if (bcrypt.compareSync(password, user.password)) {
             user.loginCount = 0;
             await user.save()
-            res.send({
+            //let priK = fs.readFileSync('privateKey.pem')
+            let token = jwt.sign({
                 id: user._id
+            }, 'secret', {
+                expiresIn: '1d'
             })
+            res.send(token)
         } else {
             user.loginCount++;
             if (user.loginCount == 3) {
@@ -54,5 +60,8 @@ router.post('/login', async function (req, res, next) {
             message: error.message
         })
     }
+})
+router.get('/me', CheckLogin, function (req, res, next) {
+    res.send(req.user)
 })
 module.exports = router
