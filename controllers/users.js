@@ -24,6 +24,20 @@ module.exports = {
         return await userModel.findOne({
             isDeleted: false,
             _id: id
+        }).populate('role')
+    }, GetAnUserByEmail: async function (email) {
+        return await userModel.findOne({
+            isDeleted: false,
+            email: email
         })
+    }, GetAnUserByToken: async function (token) {
+        let user = await userModel.findOne({
+            isDeleted: false,
+            forgotPasswordToken: token
+        })
+        if (user.forgotPasswordTokenExp > Date.now()) {
+            return user;
+        }
+        return false;
     }
 }
