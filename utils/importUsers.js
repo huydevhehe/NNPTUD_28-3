@@ -1,7 +1,7 @@
 const xlsx = require("xlsx");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-const mongoose = require("mongoose"); // ✅ thêm ở đây
+const mongoose = require("mongoose");
 
 // đọc excel
 function readExcel(filePath) {
@@ -15,7 +15,12 @@ function generatePassword() {
   return crypto.randomBytes(12).toString("base64").slice(0, 16);
 }
 
-// mailtrap config
+// delay chống spam mailtrap
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// mailtrap
 const transporter = nodemailer.createTransport({
   host: "sandbox.smtp.mailtrap.io",
   port: 2525,
@@ -46,7 +51,6 @@ async function importUsers(filePath, User) {
       username: u.username,
       email: u.email,
       password: password,
-      // ✅ fix role ObjectId
       role: new mongoose.Types.ObjectId("507f1f77bcf86cd799439011")
     });
 
@@ -54,6 +58,9 @@ async function importUsers(filePath, User) {
     await sendMail(u.email, password);
 
     console.log("OK:", u.email);
+
+    // 🔥 delay 1 giây để tránh lỗi Mailtrap
+    await sleep(1000);
   }
 }
 
