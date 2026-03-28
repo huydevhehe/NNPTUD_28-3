@@ -28,6 +28,7 @@ app.use('/api/v1/products', require('./routes/products'))
 app.use('/api/v1/categories', require('./routes/categories'))
 app.use('/api/v1/auth', require('./routes/auth'))
 app.use('/api/v1/carts', require('./routes/cart'))
+app.use('/api/v1/upload', require('./routes/upload'))
 
 mongoose.connect('mongodb://localhost:27017/NNPTUD-C4');
 mongoose.connection.on('connected', function () {
@@ -52,7 +53,7 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.send(err.message);
 });
 
 module.exports = app;
