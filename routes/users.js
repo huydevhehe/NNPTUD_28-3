@@ -5,12 +5,28 @@ let userModel = require("../schemas/users");
 let userController = require('../controllers/users')
 let { CheckLogin, CheckRole } = require('../utils/authHandler')
 
-router.get("/", CheckLogin,CheckRole("ADMIN", "USER"), async function (req, res, next) {
-    let users = await userModel
-      .find({ isDeleted: false })
-    res.send(users);
-  });
+// ✅ THÊM IMPORT
+const importUsers = require("../utils/importUsers");
 
+
+// 🔥 QUAN TRỌNG: đặt TRÊN
+router.get("/import", async (req, res) => {
+  try {
+    await importUsers("user.xlsx", userModel);
+    res.send("Import done");
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+
+router.get("/", CheckLogin, CheckRole("ADMIN", "USER"), async function (req, res, next) {
+  let users = await userModel.find({ isDeleted: false })
+  res.send(users);
+});
+
+
+// ❌ để dưới
 router.get("/:id", async function (req, res, next) {
   try {
     let result = await userModel
@@ -25,6 +41,7 @@ router.get("/:id", async function (req, res, next) {
     res.status(404).send({ message: "id not found" });
   }
 });
+
 
 router.post("/", CreateAnUserValidator, validatedResult, async function (req, res, next) {
   try {
@@ -44,8 +61,7 @@ router.put("/:id", ModifyAnUserValidator, validatedResult, async function (req, 
 
     if (!updatedItem) return res.status(404).send({ message: "id not found" });
 
-    let populated = await userModel
-      .findById(updatedItem._id)
+    let populated = await userModel.findById(updatedItem._id)
     res.send(populated);
   } catch (err) {
     res.status(400).send({ message: err.message });
