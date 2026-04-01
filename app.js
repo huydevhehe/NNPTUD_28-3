@@ -29,6 +29,7 @@ app.use('/api/v1/categories', require('./routes/categories'));
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/carts', require('./routes/cart'));
 app.use('/api/v1/upload', require('./routes/upload'));
+app.use('/api/v1/messages', require('./routes/messages'));
 
 // ✅ Mongo Atlas connect
 mongoose.connect("mongodb+srv://nguyenquochuyc7_db_user:ddAgMl7EMdtZbWD7@cluster0.zzqlfbm.mongodb.net/NNPTUD-C4")
